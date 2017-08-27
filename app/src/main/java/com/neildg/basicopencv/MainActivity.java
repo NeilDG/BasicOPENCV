@@ -1,13 +1,26 @@
 package com.neildg.basicopencv;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.darsh.multipleimageselect.activities.AlbumSelectActivity;
+import com.darsh.multipleimageselect.helpers.Constants;
+import com.darsh.multipleimageselect.models.Image;
+import com.neildg.basicopencv.io.BitmapURIRepository;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
@@ -33,8 +46,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Example of a call to a native method
-        TextView tv = (TextView) findViewById(R.id.sample_text);
+        this.initializeButtons();
     }
 
     @Override
@@ -48,5 +60,49 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "OpenCV library found inside package. Using it!");
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
+    }
+
+    private void initializeButtons() {
+        Button pickImagesBtn = (Button) this.findViewById(R.id.select_image_btn);
+        pickImagesBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.startImagePickActivity();
+            }
+        });
+    }
+
+    private void startImagePickActivity() {
+        Intent intent = new Intent(MainActivity.this, AlbumSelectActivity.class);
+        intent.putExtra(Constants.INTENT_EXTRA_LIMIT, 10);
+        startActivityForResult(intent, Constants.REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            //The array list has the image paths of the selected images
+            ArrayList<Image> images = data.getParcelableArrayListExtra(Constants.INTENT_EXTRA_IMAGES);
+            ArrayList<Uri> imageURIList = new ArrayList<>();
+            for(int i = 0; i < images.size(); i++) {
+                imageURIList.add(Uri.fromFile(new File(images.get(i).path)));
+                BitmapURIRepository.getInstance().setImageURIList(imageURIList);
+            }
+
+            if(imageURIList.size() >= 3) {
+                Log.v("LOG_TAG", "Selected Images " + imageURIList.size());
+
+            }
+            else {
+                Toast.makeText(this, "You haven't picked enough images. Pick multiple similar images. At least 3.",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void startProcessing() {
+
     }
 }
