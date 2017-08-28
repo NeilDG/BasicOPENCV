@@ -14,6 +14,12 @@ import com.darsh.multipleimageselect.activities.AlbumSelectActivity;
 import com.darsh.multipleimageselect.helpers.Constants;
 import com.darsh.multipleimageselect.models.Image;
 import com.neildg.basicopencv.io.BitmapURIRepository;
+import com.neildg.basicopencv.io.DirectoryStorage;
+import com.neildg.basicopencv.io.FileImageReader;
+import com.neildg.basicopencv.io.FileImageWriter;
+import com.neildg.basicopencv.platformtools.core_application.ApplicationCore;
+import com.neildg.basicopencv.processing.ProcessingThread;
+import com.neildg.basicopencv.ui.progress_dialog.ProgressDialogHandler;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
@@ -47,6 +53,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         this.initializeButtons();
+
+        ApplicationCore.initialize(this);
+        ProgressDialogHandler.initialize(this);
+        ProgressDialogHandler.getInstance().setDefaultProgressImplementor();
     }
 
     @Override
@@ -60,6 +70,19 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "OpenCV library found inside package. Using it!");
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
+
+
+        DirectoryStorage.getSharedInstance().createDirectory();
+        FileImageWriter.initialize(this);
+        FileImageReader.initialize(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        ProgressDialogHandler.destroy();
+        FileImageWriter.destroy();
+        FileImageReader.destroy();
+        super.onDestroy();
     }
 
     private void initializeButtons() {
@@ -91,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
             if(imageURIList.size() >= 3) {
                 Log.v("LOG_TAG", "Selected Images " + imageURIList.size());
+                this.startProcessing();
 
             }
             else {
@@ -103,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startProcessing() {
-
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Processing images");
+        ProcessingThread processingThread = new ProcessingThread();
+        processingThread.start();
     }
 }
