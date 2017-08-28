@@ -24,5 +24,8 @@ public class ProcessingThread extends Thread {
         ImageAlignmentOperator alignmentOperator = new ImageAlignmentOperator(inputImages);
         alignmentOperator.perform();
 
+        ImageFusionOperator fusionOperator = new ImageFusionOperator(inputImages);
+        fusionOperator.perform();
+
     }
 }

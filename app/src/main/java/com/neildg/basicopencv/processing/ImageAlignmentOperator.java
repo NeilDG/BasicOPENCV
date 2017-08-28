@@ -58,18 +58,22 @@ public class ImageAlignmentOperator {
 
     public void perform() {
         this.detectFeaturesInReference(0);
+        this.outputImages[0] = new Mat();
+        this.inputImages[0].copyTo(this.outputImages[0]); //create exact copy
         for(int i = 1; i < this.inputImages.length; i++) {
             this.detectFeatures(this.inputImages[i], i - 1);
             this.matchFeaturesToReference(this.lrDescriptorList[i - 1], i - 1, 999.9f);
 
             //debug show mat
-            Mat matchesShower = new Mat();
+            /*Mat matchesShower = new Mat();
             Features2d.drawMatches(this.inputImages[0], this.refKeypoint, this.inputImages[i], this.lrKeypointsList[i - 1], this.dMatchesList[i - 1], matchesShower);
             FileImageWriter.getInstance().saveMatrixToImage(matchesShower, "matches_"+i, ImageFileAttribute.FileType.JPEG);
-            matchesShower.release();
+            matchesShower.release();*/
 
             Mat homography = this.identifyHomography(this.lrKeypointsList[i - 1], this.dMatchesList[i - 1]);
             Mat warpedMat = this.performPerspectiveWarping(this.inputImages[i], homography);
+
+            this.outputImages[i] = warpedMat;
 
             FileImageWriter.getInstance().saveMatrixToImage(warpedMat, "warped_" +i, ImageFileAttribute.FileType.JPEG);
         }
@@ -77,6 +81,11 @@ public class ImageAlignmentOperator {
         MatMemory.releaseAll(this.lrKeypointsList, false);
         MatMemory.releaseAll(this.lrDescriptorList, false);
         MatMemory.releaseAll(this.dMatchesList, false);
+        MatMemory.releaseAll(this.inputImages, true);
+    }
+
+    public Mat[] getOutputImages() {
+        return this.outputImages;
     }
 
     /*
