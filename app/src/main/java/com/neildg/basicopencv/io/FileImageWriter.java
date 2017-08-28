@@ -34,9 +34,8 @@ public class FileImageWriter {
 	public static FileImageWriter getInstance() {
 		return sharedInstance;
 	}
-	
-	public final static String ALBUM_NAME_PREFIX = "/SR";
-	public final static String ALBUM_EXTERNAL_NAME = "EagleEye Results";
+
+	public final static String ALBUM_EXTERNAL_NAME = "BasicOPENCV Results";
 
 	private Context context;
 	private String proposedPath;
