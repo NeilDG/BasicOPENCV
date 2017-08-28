@@ -50,6 +50,7 @@ public class ImageAlignmentOperator {
 
     public ImageAlignmentOperator(Mat[] inputImages) {
         this.inputImages = inputImages;
+        this.outputImages = new Mat[this.inputImages.length];
 
         this.lrKeypointsList = new MatOfKeyPoint[this.inputImages.length - 1];
         this.lrDescriptorList = new Mat[this.inputImages.length - 1];

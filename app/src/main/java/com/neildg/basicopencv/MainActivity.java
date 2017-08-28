@@ -18,6 +18,10 @@ import com.neildg.basicopencv.io.DirectoryStorage;
 import com.neildg.basicopencv.io.FileImageReader;
 import com.neildg.basicopencv.io.FileImageWriter;
 import com.neildg.basicopencv.platformtools.core_application.ApplicationCore;
+import com.neildg.basicopencv.platformtools.notifications.NotificationCenter;
+import com.neildg.basicopencv.platformtools.notifications.NotificationListener;
+import com.neildg.basicopencv.platformtools.notifications.Notifications;
+import com.neildg.basicopencv.platformtools.notifications.Parameters;
 import com.neildg.basicopencv.processing.ProcessingThread;
 import com.neildg.basicopencv.ui.progress_dialog.ProgressDialogHandler;
 
@@ -28,7 +32,7 @@ import org.opencv.android.OpenCVLoader;
 import java.io.File;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NotificationListener {
     private final static String TAG = "MainActivity";
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -57,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
         ApplicationCore.initialize(this);
         ProgressDialogHandler.initialize(this);
         ProgressDialogHandler.getInstance().setDefaultProgressImplementor();
+
+        NotificationCenter.getInstance().addObserver(Notifications.ON_PROCESS_COMPLETED, this);
     }
 
     @Override
@@ -82,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
         ProgressDialogHandler.destroy();
         FileImageWriter.destroy();
         FileImageReader.destroy();
+
+        NotificationCenter.getInstance().removeObserver(Notifications.ON_PROCESS_COMPLETED, this);
         super.onDestroy();
     }
 
@@ -130,5 +138,12 @@ public class MainActivity extends AppCompatActivity {
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Processing images");
         ProcessingThread processingThread = new ProcessingThread();
         processingThread.start();
+    }
+
+    @Override
+    public void onNotify(String notificationString, Parameters params) {
+        if(notificationString == Notifications.ON_PROCESS_COMPLETED) {
+            ProgressDialogHandler.getInstance().hideProcessDialog();
+        }
     }
 }
