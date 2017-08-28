@@ -11,7 +11,7 @@ import java.io.File;
 public class DirectoryStorage {
     private final static String TAG = "DirectoryStorage";
 
-    public final static String ALBUM_NAME_PREFIX = "/SR";
+    public final static String ALBUM_NAME_PREFIX = "/DN";
     public final static String DEBUG_FILE_PREFIX = "/DEBUG";
 
     private static DirectoryStorage sharedInstance = null;
@@ -32,7 +32,7 @@ public class DirectoryStorage {
     }
 
     public boolean isAlbumDirExisting(int albumNumber) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + FileImageWriter.ALBUM_NAME_PREFIX + albumNumber);
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + ALBUM_NAME_PREFIX + albumNumber);
 
         return file.isDirectory() && file.exists();
     }
