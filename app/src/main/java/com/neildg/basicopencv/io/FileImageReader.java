@@ -108,6 +108,11 @@ public class FileImageReader {
 		return file.exists();
 	}
 
+	public boolean doesImageExists(String fileName) {
+		File file = new File(FileImageWriter.getInstance().getFilePath() + "/" +fileName);
+		return file.exists();
+	}
+
 	public Bitmap loadBitmapFromFile(String fileName, ImageFileAttribute.FileType fileType) {
 		String completeFilePath = FileImageWriter.getInstance().getFilePath() + "/" + fileName + ImageFileAttribute.getFileExtension(fileType);
 		Log.d(TAG, "Filepath for loading bitmap: " +completeFilePath);

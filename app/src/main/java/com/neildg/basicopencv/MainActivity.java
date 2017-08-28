@@ -144,6 +144,8 @@ public class MainActivity extends AppCompatActivity implements NotificationListe
     public void onNotify(String notificationString, Parameters params) {
         if(notificationString == Notifications.ON_PROCESS_COMPLETED) {
             ProgressDialogHandler.getInstance().hideProcessDialog();
+            Intent imageViewIntent = new Intent(MainActivity.this, ImageViewActivity.class);
+            this.startActivity(imageViewIntent);
         }
     }
 }
